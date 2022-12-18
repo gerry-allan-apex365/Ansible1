@@ -1,0 +1,1 @@
+ansible win -m win_ping
