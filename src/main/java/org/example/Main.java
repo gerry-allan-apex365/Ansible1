@@ -1,11 +1,11 @@
 package org.example;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import org.json.JSONObject;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -30,9 +30,26 @@ public class Main {
 // Read the output from the command
             System.out.println("Here is the standard output of the command:\n");
             String s = null;
+            String filename = "/home/Archer/Ansible1/src/main/resources/ansibleinventory.json";
+            FileWriter fWriter = new FileWriter(filename);
             while ((s = stdInput.readLine()) != null) {
-                System.out.println(s);
+
+                fWriter.write(s);
+                fWriter.write("\r\n");
+
             }
+            fWriter.close();
+            String json = readFileAsString(filename);
+
+            String[] output = json.split("=>");
+            String outcome = output[1];
+            System.out.println(outcome);
+
+
+            /*JSONObject jsonObject = new JSONObject(outcome);
+            String ansibledistribution = jsonObject.getString("ansible_distribution");
+           // String ansibledistribution = (String) jsonObject.get("ansible_distribution");
+            System.out.println("Distribution is " + ansibledistribution);*/
 
 // Read any errors from the attempted command
             System.out.println("Here is the standard error of the command (if any):\n");
@@ -44,4 +61,9 @@ public class Main {
             ex.printStackTrace();
         }
     }
+
+    private static String readFileAsString(String file) throws Exception{
+        return new String(Files.readAllBytes(Paths.get(file)));
+    }
+
 }
