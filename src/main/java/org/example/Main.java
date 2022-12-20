@@ -1,10 +1,13 @@
 package org.example;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import com.google.gson.*;
+
 
 
 public class Main {
@@ -39,17 +42,8 @@ public class Main {
 
             }
             fWriter.close();
-            String json = readFileAsString(filename);
 
-            String[] output = json.split("=>");
-            String outcome = output[1];
-            System.out.println(outcome);
-
-
-            /*JSONObject jsonObject = new JSONObject(outcome);
-            String ansibledistribution = jsonObject.getString("ansible_distribution");
-           // String ansibledistribution = (String) jsonObject.get("ansible_distribution");
-            System.out.println("Distribution is " + ansibledistribution);*/
+            extracted(filename);
 
 // Read any errors from the attempted command
             System.out.println("Here is the standard error of the command (if any):\n");
@@ -60,6 +54,23 @@ public class Main {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    private static void extracted(String filename) throws Exception {
+        String json = readFileAsString(filename);
+        String[] output = json.split("=>");
+        String outcome = output[1];
+
+        JSONObject jsonObject = new JSONObject(outcome);
+        JSONObject jsonObject1 = jsonObject.getJSONObject("ansible_facts");
+
+        String ansible_distribution = jsonObject1.getString("ansible_distribution");
+        String ansible_distribution_major_version = jsonObject1.getString("ansible_distribution_major_version");
+        String ansible_distribution_version = jsonObject1.getString("ansible_distribution_version");
+
+        System.out.println("ansible_distribution :" +ansible_distribution);
+        System.out.println("ansible_distribution_major_version :" +ansible_distribution_major_version);
+        System.out.println("ansible_distribution_version :" +ansible_distribution_version);
     }
 
     private static String readFileAsString(String file) throws Exception{
